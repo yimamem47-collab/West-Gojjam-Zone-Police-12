@@ -65,8 +65,6 @@ const isSandboxed = window.location.hostname.includes('ais-dev') ||
 // Use memory cache by default in sandboxed environments to prevent IndexedDB corruption in iframes
 export const firestoreSettings: any = {
   localCache: isSandboxed ? memoryLocalCache() : persistentLocalCache({}),
-  experimentalForceLongPolling: true,
-  useFetchStreams: false,
   ignoreUndefinedProperties: true,
 };
 
@@ -162,11 +160,7 @@ export async function clearFirestoreCache() {
     // Small delay to ensure DB handles are released by the OS/browser
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Switch to memory cache for survival
-    const safeSettings = { ...firestoreSettings, localCache: memoryLocalCache() };
-    db = initializeFirestore(app, safeSettings, dbId);
-    console.log("Firestore cache cleared and instance restarted with memory cache.");
-    
+    console.log("Firestore cache cleared. Survival mode activated, page reload is required.");
     return true;
   } catch (error) {
     console.error("Failed to clear Firestore cache:", error);
